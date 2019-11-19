@@ -2,8 +2,10 @@ import numpy as np
 import pandas as pd
 import re
 import matplotlib.pyplot as plt
+import scikitplot
 import nltk
 # nltk.download('wordnet')
+# nltk.download('stopwords')
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer
 
@@ -53,20 +55,15 @@ y_pred = classifier.predict(x_test)
 pr, rc, thresholds = precision_recall_curve(y_test, y_pred_rt[:, 1])
 print("roc_auc for class 1:", roc_auc_score(y_test,y_pred_rt[:, 1]))
 # Figure 1: precision, recall vs thresholds
-plt.figure(1)
-plt.plot(thresholds, pr[1:])
-plt.plot(thresholds, rc[1:])
-plt.xlabel('thresholds')
-plt.legend(['precision', 'recall'])
+
+scikitplot.metrics.plot_precision_recall(y_test, y_pred_rt, plot_micro = False)
 crossover_index = np.max(np.where(pr <= rc))
 crossover_cutoff = thresholds[crossover_index]
 crossover_recall = rc[crossover_index]
 
 # Figure 2: ROC
-plt.figure(2)
-plt.plot(rc, pr, linestyle='--')
-plt.xlabel('Recall')
-plt.ylabel('Precision')
+scikitplot.metrics.plot_roc(y_test, y_pred_rt, plot_micro = False, plot_macro = False)
+
 
 # ========================== classification report and Confusion matrix ============================================
 print(classification_report(y_test, y_pred > crossover_cutoff))
